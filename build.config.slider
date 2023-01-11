@@ -1,0 +1,60 @@
+. ${ROOT_DIR}/${KERNEL_DIR}/build.config.gs101
+
+MAKE_GOALS="$MAKE_GOALS
+modules
+google/gs101-a0.dtb
+google/gs101-b0.dtb
+google/dtbo.img
+google/gs101-dpm-eng.dtbo
+google/gs101-dpm-user.dtbo
+google/gs101-dpm-userdebug.dtbo
+"
+
+FILES="
+arch/arm64/boot/dts/google/gs101-a0.dtb
+arch/arm64/boot/dts/google/gs101-b0.dtb
+arch/arm64/boot/dts/google/dtbo.img
+arch/arm64/boot/dts/google/gs101-dpm-eng.dtbo
+arch/arm64/boot/dts/google/gs101-dpm-user.dtbo
+arch/arm64/boot/dts/google/gs101-dpm-userdebug.dtbo
+"
+
+if [ -z "$MIXED_BUILD" ]; then
+FILES="$FILES
+$DEVICE_KERNEL_FILES
+"
+fi
+
+MODULES_LIST=${KERNEL_DIR}/vendor_boot_modules.slider
+
+VENDOR_RAMDISK_CMDS="modify_vendor_ramdisk"
+function modify_vendor_ramdisk() {
+  ln -f init.recovery.gs101.rc init.recovery.slider.rc
+  ln -f init.recovery.gs101.rc init.recovery.whitefin.rc
+  ln -f init.recovery.gs101.rc init.recovery.oriole.rc
+  ln -f init.recovery.gs101.rc init.recovery.raven.rc
+}
+
+EXT_MODULES+="
+raviole/private/google-modules/display/samsung
+raviole/private/google-modules/wlan/bcmdhd43752
+raviole/private/google-modules/wlan/bcmdhd4389
+raviole/private/google-modules/gpu/mali_pixel
+raviole/private/google-modules/gpu/mali_kbase
+raviole/private/google-modules/lwis
+raviole/private/google-modules/edgetpu/drivers/edgetpu
+raviole/private/google-modules/bms
+raviole/private/google-modules/amplifiers/drv2624
+raviole/private/google-modules/amplifiers/cs40l25
+raviole/private/google-modules/amplifiers/cs35l41
+raviole/private/google-modules/amplifiers/audiometrics
+raviole/private/google-modules/aoc
+raviole/private/google-modules/aoc/alsa
+raviole/private/google-modules/aoc/usb
+raviole/private/google-modules/touch/common
+raviole/private/google-modules/touch/fts/ftm5
+raviole/private/google-modules/touch/sec
+raviole/private/google-modules/power/reset
+raviole/private/google-modules/bluetooth/broadcom
+raviole/private/google-modules/nfc
+"
